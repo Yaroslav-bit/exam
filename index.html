@@ -4,48 +4,28 @@
   <meta charset="UTF-8" />
   <title>Кваліфікаційне тестування</title>
   <style>
-    body {
-      font-family: sans-serif;
-      margin: 2em;
-      background: #f5f5f5;
-      text-align: center;
-    }
+    body { font-family: sans-serif; margin: 2em; background: #f5f5f5; text-align: center; }
     .container {
-      background: white;
-      padding: 2em;
-      max-width: 800px;
-      margin: 0 auto;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      background: white; padding: 2em; max-width: 800px; margin: auto;
+      border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.1);
     }
     button {
-      padding: 1em 2em;
-      font-size: 1.2em;
-      background: #007acc;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-top: 2em;
+      padding: 1em 2em; font-size: 1.2em; background: #007acc; color: white;
+      border: none; border-radius: 5px; cursor: pointer; margin-top: 2em;
     }
-    button:hover {
-      background: #005c99;
-    }
-    img.qr {
-      margin-top: 2em;
-      width: 200px;
-    }
+    button:hover { background: #005c99; }
+    img.qr { margin-top: 2em; width: 200px; }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Білети<br>Державної кваліфікаційної атестації</h1>
-    <p>Група №1, професія: Тракторист-машиніст сільськогосподарського виробництва</p>
-    <p>Майстер виробничого навчання: Гуменюк М.В.</p>
+    <h1>Білети кваліфікаційної атестації</h1>
+    <p>Група №1, професія: Тракторист-машиніст</p>
+    <p>Майстер: Гуменюк М.В.</p>
     <button onclick="window.location.href='test.html'">Почати тестування</button>
     <div>
-      <img src="qr.png" alt="QR-код до тестування" class="qr" />
-      <p>Скануй для початку онлайн-тестування</p>
+      <img src="qr.png" alt="QR" class="qr" />
+      <p>Скануй для початку тестування</p>
     </div>
   </div>
 </body>
