@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Тестування - Білет 1</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+    .hidden { display: none; }
+    .question { margin-bottom: 20px; }
+    .answer { display: block; margin: 5px 0; padding: 8px; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; }
+    .correct { background-color: #c8f7c5; border-color: green; }
+    .incorrect { background-color: #f7c5c5; border-color: red; }
+    #result { font-weight: bold; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div id="userForm">
+    <h2>Введіть ім'я та прізвище</h2>
+    <input type="text" id="fullname" placeholder="Ім'я Прізвище">
+    <br><br>
+    <button onclick="startTest()">Почати тест</button>
+  </div>
+
+  <div id="ticketSelector" class="hidden">
+    <h2>Оберіть білет</h2>
+    <select id="ticket" onchange="loadTicket()">
+      <option value="">-- Оберіть білет --</option>
+      <option value="1">Білет 1</option>
+    </select>
+  </div>
+
+  <div id="testArea" class="hidden">
+    <div class="question" id="questionContainer"></div>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    const tickets = {
+      1: {
+        questions: [
+          {
+            text: "1. Яке технічне обслуговування не відноситься до номерних?",
+            answers: ["ТО-2", "ТО-3", "ЩТО", "ТО-1"],
+            correct: 2 // 0-based index ("ЩТО")
+          }
+        ]
+      }
+    };
+
+    let username = '';
+    let score = 0;
+
+    function startTest() {
+      const nameInput = document.getElementById('fullname');
+      if (!nameInput.value.trim()) {
+        alert('Будь ласка, введіть ім\'я та прізвище');
+        return;
+      }
+      username = nameInput.value.trim();
+      document.getElementById('userForm').classList.add('hidden');
+      document.getElementById('ticketSelector').classList.remove('hidden');
+    }
+
+    function loadTicket() {
+      const ticketNum = document.getElementById('ticket').value;
+      if (!ticketNum) return;
+      score = 0;
+      document.getElementById('ticketSelector').classList.add('hidden');
+      document.getElementById('testArea').classList.remove('hidden');
+
+      const container = document.getElementById('questionContainer');
+      container.innerHTML = '';
+      const ticket = tickets[ticketNum];
+      ticket.questions.forEach((q, idx) => {
+        const qDiv = document.createElement('div');
+        qDiv.innerHTML = `<strong>${q.text}</strong>`;
+
+        q.answers.forEach((a, i) => {
+          const btn = document.createElement('div');
+          btn.className = 'answer';
+          btn.innerText = a;
+          btn.onclick = function() {
+            if (btn.classList.contains('correct') || btn.classList.contains('incorrect')) return;
+            if (i === q.correct) {
+              btn.classList.add('correct');
+              score++;
+            } else {
+              btn.classList.add('incorrect');
+              const correctBtn = btn.parentNode.querySelectorAll('.answer')[q.correct];
+              correctBtn.classList.add('correct');
+            }
+            if (idx === ticket.questions.length - 1) {
+              document.getElementById('result').innerText = `${username}, ви дали ${score} правильну(-их) відповідь(-ей) з ${ticket.questions.length}`;
+            }
+          }
+          qDiv.appendChild(btn);
+        });
+
+        container.appendChild(qDiv);
+      });
+    }
+  </script>
+</body>
+</html>
