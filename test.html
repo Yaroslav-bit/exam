@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <title>Проходження тесту</title>
+  <style>
+    body { font-family: sans-serif; margin: 2em; background: #f0f0f0; }
+    .container { max-width: 800px; margin: auto; background: white; padding: 2em; border-radius: 10px; }
+    .question { margin-bottom: 1.5em; }
+    .answers button {
+      display: block; margin: 0.5em 0; padding: 0.5em;
+      width: 100%; font-size: 1em; border-radius: 5px;
+      border: 1px solid #ccc; cursor: pointer;
+    }
+    .answers button:hover { background: #cceeff; }
+    .answers button.correct { background: #c8f7c5; border-color: #2ecc71; }
+    .answers button.incorrect { background: #f7c5c5; border-color: #e74c3c; }
+    .result { font-size: 1.2em; margin-top: 2em; }
+    .nav { margin-bottom: 1em; }
+    .nav button { margin: 0.2em; }
+    #finishBtn {
+      padding: 1em; background: #007acc; color: white; font-weight: bold;
+      border: none; border-radius: 5px; cursor: pointer; display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Тестування</h2>
+    <label>Прізвище та ім’я: <input type="text" id="username" /></label><br><br>
+    <label>Оберіть білет:
+      <select id="ticketSelect"></select>
+    </label>
+    <button onclick="startTest()">Почати</button>
+
+    <div id="navButtons" class="nav"></div>
+    <div id="testArea" style="display:none;"></div>
+    <button id="finishBtn" onclick="finishTest()">Завершити тестування</button>
+  </div>
+
+<script src="tickets.js"></script>
+<script>
+let user = { name: '', surname: '', ticket: '', answers: {} };
+
+function startTest() {
+  const fullName = document.getElementById("username").value.trim();
+  if (!fullName.includes(" ")) return alert("Введіть ПІБ повністю.");
+  const [surname, name] = fullName.split(" ");
+  const ticket = document.getElementById("ticketSelect").value;
+
+  user.name = name;
+  user.surname = surname;
+  user.ticket = ticket;
+
+  document.getElementById("ticketSelect").disabled = true;
+  document.getElementById("username").disabled = true;
+
+  loadQuestions(ticket);
+}
+
+function loadQuestions(ticketNum) {
+  const area = document.getElementById("testArea");
+  const nav = document.getElementById("navButtons");
+  area.innerHTML = '';
+  nav.innerHTML = '';
+  const questions = tickets[ticketNum].questions;
+
+  questions.forEach((q, i) => {
+    const qdiv = document.createElement("div");
+    qdiv.className = "question";
+    qdiv.id = "q" + i;
+    qdiv.innerHTML = `<p><b>Завдання ${i + 1}:</b> ${q.text}</p>`;
+    const answersDiv = document.createElement("div");
+    answersDiv.className = "answers";
+
+    q.answers.forEach((ans, idx) => {
+      const btn = document.createElement("button");
+      btn.textContent = ans;
+      btn.onclick = () => {
+        if (user.answers[i] !== undefined) return;
+        user.answers[i] = idx;
+        if (idx === q.correct) {
+          btn.classList.add("correct");
+        } else {
+          btn.classList.add("incorrect");
+          answersDiv.children[q.correct].classList.add("correct");
+        }
+        [...answersDiv.children].forEach(b => b.disabled = true);
+        checkCompletion();
+      };
+      answersDiv.appendChild(btn);
+    });
+
+    qdiv.appendChild(answersDiv);
+    area.appendChild(qdiv);
+
+    const navBtn = document.createElement("button");
+    navBtn.textContent = i + 1;
+    navBtn.onclick = () => document.getElementById("q" + i).scrollIntoView({ behavior: 'smooth' });
+    nav.appendChild(navBtn);
+  });
+
+  area.style.display = "block";
+}
+
+function checkCompletion() {
+  const total = tickets[user.ticket].questions.length;
+  if (Object.keys(user.answers).length === total) {
+    document.getElementById("finishBtn").style.display = "inline-block";
+  }
+}
+
+function finishTest() {
+  const total = tickets[user.ticket].questions.length;
+  const correct = Object.entries(user.answers).filter(([i, v]) =>
+    v == tickets[user.ticket].questions[i].correct).length;
+
+  // Надсилання до Google Таблиці
+  fetch("https://script.google.com/macros/s/AKfycbzjWvb8W2MEWHg1SzGq7bHaZMhFHwz-bNzquepG08qHeNDa2rAUo3AIJH2kBJLfm9G4kA/exec", {
+    method: "POST",
+    body: JSON.stringify({
+      firstName: user.name,
+      lastName: user.surname,
+      ticket: user.ticket,
+      correct: correct,
+      total: total
+    }),
+    mode: "no-cors"
+  });
+
+  // Перехід до сторінки результату
+  const params = new URLSearchParams({
+    name: user.name,
+    surname: user.surname,
+    ticket: user.ticket,
+    score: correct,
+    total: total
+  });
+  window.location.href = "result.html?" + params.toString();
+}
+
+// Генерація списку білетів
+window.onload = () => {
+  const sel = document.getElementById("ticketSelect");
+  for (let key in tickets) {
+    sel.innerHTML += `<option value="${key}">Білет ${key}</option>`;
+  }
+}
+</script>
+</body>
+</html>
