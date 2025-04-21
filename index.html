@@ -1,5 +1,32 @@
 <!DOCTYPE html>
 <html lang="uk">
-<head><meta charset="UTF-8"><title>Титульна сторінка</title></head>
-<body><h1>Кваліфікаційне тестування</h1><a href="test.html">Почати тестування</a><br><img src="qr.png" width="200"/></body>
+<head>
+  <meta charset="UTF-8">
+  <title>Кваліфікаційне тестування</title>
+  <style>
+    body { font-family: sans-serif; background: #f0f0f0; padding: 2em; text-align: center; }
+    .container {
+      background: white; padding: 2em; max-width: 800px; margin: auto;
+      border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    button {
+      padding: 1em 2em; font-size: 1.2em; background: #007acc;
+      color: white; border: none; border-radius: 5px; cursor: pointer;
+    }
+    button:hover { background: #005c99; }
+    img.qr { margin-top: 1.5em; width: 180px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Кваліфікаційне тестування</h1>
+    <p>Професія: Тракторист-машиніст</p>
+    <p>Майстер: Гуменюк М.В.</p>
+    <button onclick="location.href='test.html'">Почати тестування</button>
+    <div>
+      <img class="qr" src="qr.png" alt="QR">
+      <p>Скануй, щоб почати онлайн-тестування</p>
+    </div>
+  </div>
+</body>
 </html>
