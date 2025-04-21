@@ -1,0 +1,87 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <title>Тестування</title>
+  <style>
+    body { font-family: Arial; padding: 20px; max-width: 800px; margin: auto; }
+    .question { margin-bottom: 20px; }
+    .answer { cursor: pointer; padding: 5px; margin: 3px 0; border: 1px solid #ccc; }
+    .correct { background-color: #c8f7c5; }
+    .incorrect { background-color: #f7c5c5; }
+    #results { margin-top: 20px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h2>Тестування</h2>
+  <label>Ім'я: <input id="firstName" type="text" /></label><br/>
+  <label>Прізвище: <input id="lastName" type="text" /></label><br/><br/>
+  <label>Оберіть білет:
+    <select id="ticketSelect"></select>
+  </label><br/><br/>
+  <button onclick="startTest()">Почати</button>
+  <div id="testArea" style="display:none;"></div>
+  <div id="results"></div>
+  <script src="tickets.js"></script>
+  <script>
+    const select = document.getElementById("ticketSelect");
+    const testArea = document.getElementById("testArea");
+    const results = document.getElementById("results");
+
+    for (const num in tickets) {
+      const opt = document.createElement("option");
+      opt.value = num;
+      opt.textContent = "Білет " + num;
+      select.appendChild(opt);
+    }
+
+    function startTest() {
+      const ticket = tickets[select.value];
+      testArea.innerHTML = "";
+      results.innerHTML = "";
+      testArea.style.display = "block";
+      let correctCount = 0;
+      ticket.questions.forEach((q, qi) => {
+        const div = document.createElement("div");
+        div.className = "question";
+        const title = document.createElement("div");
+        title.textContent = q.text;
+        div.appendChild(title);
+        q.answers.forEach((a, ai) => {
+          const ans = document.createElement("div");
+          ans.className = "answer";
+          ans.textContent = a;
+          ans.onclick = () => {
+            if (ans.classList.contains("correct") || ans.classList.contains("incorrect")) return;
+            if (ai === q.correct) {
+              ans.classList.add("correct");
+              correctCount++;
+            } else {
+              ans.classList.add("incorrect");
+              const correctAns = div.querySelectorAll(".answer")[q.correct];
+              correctAns.classList.add("correct");
+            }
+          };
+          div.appendChild(ans);
+        });
+        testArea.appendChild(div);
+      });
+      const submitBtn = document.createElement("button");
+      submitBtn.textContent = "Завершити тест";
+      submitBtn.onclick = () => {
+        results.textContent = "Правильних відповідей: " + correctCount + " з " + ticket.questions.length;
+        const data = {
+          name: document.getElementById("firstName").value,
+          surname: document.getElementById("lastName").value,
+          ticket: select.value,
+          correct: correctCount,
+          total: ticket.questions.length
+        };
+        console.log("Результати:", data);
+      };
+      testArea.appendChild(submitBtn);
+    }
+  </script>
+</body>
+</html>
